@@ -261,7 +261,7 @@ ppVarDecl hasIn vd = case vd of
   VarDecl _ id Nothing  -> prettyPrint id
   VarDecl _ id (Just e) -> nest 4
                            (prettyPrint id <+> equals
-                            <+> ppAssignmentExpression hasIn e)
+                            </> ppAssignmentExpression hasIn e)
 
 -- | Pretty prints a string assuming it's used as an identifier. Note
 -- that per Spec 7.6 unicode escape sequences representing illegal
@@ -383,22 +383,22 @@ prefixSpace op = case op of
 ppMultiplicativeExpression :: Expression a -> Doc
 ppMultiplicativeExpression e = case e of
   InfixExpr _ op e1 e2 | op `elem` [OpMul, OpDiv, OpMod] ->
-    ppMultiplicativeExpression e1 <+> prettyPrint op <+> ppUnaryExpression e2
+    ppMultiplicativeExpression e1 </> prettyPrint op </> ppUnaryExpression e2
   _ -> ppUnaryExpression e
 
 -- 11.6
 ppAdditiveExpression :: Expression a -> Doc
 ppAdditiveExpression e = case e of
   InfixExpr _ op e1 e2 | op `elem` [OpAdd, OpSub] ->
-    ppAdditiveExpression e1 <+> prettyPrint op
-    <+> ppMultiplicativeExpression e2
+    ppAdditiveExpression e1 </> prettyPrint op
+    </> ppMultiplicativeExpression e2
   _ -> ppMultiplicativeExpression e
 
 -- 11.7
 ppShiftExpression :: Expression a -> Doc
 ppShiftExpression e = case e of
   InfixExpr _ op e1 e2 | op `elem` [OpLShift, OpSpRShift, OpZfRShift] ->
-    ppShiftExpression e1 <+> prettyPrint op <+> ppAdditiveExpression e2
+    ppShiftExpression e1 </> prettyPrint op </> ppAdditiveExpression e2
   _ -> ppAdditiveExpression e
 
 -- 11.8.
@@ -410,67 +410,67 @@ ppRelationalExpression hasIn e =
       ops     = if hasIn then OpIn:opsNoIn else opsNoIn
   in case e of
     InfixExpr _ op e1 e2 | op `elem` ops ->
-      ppRelationalExpression hasIn e1 <+> prettyPrint op
-      <+> ppShiftExpression e2
+      ppRelationalExpression hasIn e1 </> prettyPrint op
+      </> ppShiftExpression e2
     _ -> ppShiftExpression e
 
 -- 11.9
 ppEqualityExpression :: Bool -> Expression a -> Doc
 ppEqualityExpression hasIn e = case e of
   InfixExpr _ op e1 e2 | op `elem` [OpEq, OpNEq, OpStrictEq, OpStrictNEq] ->
-    ppEqualityExpression hasIn e1 <+> prettyPrint op <+>
+    ppEqualityExpression hasIn e1 </> prettyPrint op </>
     ppRelationalExpression hasIn e2
   _ -> ppRelationalExpression hasIn e
 
 -- 11.10
 ppBitwiseANDExpression :: Bool -> Expression a -> Doc
 ppBitwiseANDExpression hasIn e = case e of
-  InfixExpr _ op@OpBAnd e1 e2 -> ppBitwiseANDExpression hasIn e1 <+>
-                                 prettyPrint op <+>
+  InfixExpr _ op@OpBAnd e1 e2 -> ppBitwiseANDExpression hasIn e1 </>
+                                 prettyPrint op </>
                                  ppEqualityExpression hasIn e2
   _ -> ppEqualityExpression hasIn e
 
 ppBitwiseXORExpression :: Bool -> Expression a -> Doc
 ppBitwiseXORExpression hasIn e = case e of
-  InfixExpr _ op@OpBXor e1 e2 -> ppBitwiseXORExpression hasIn e1 <+>
-                                 prettyPrint op <+>
+  InfixExpr _ op@OpBXor e1 e2 -> ppBitwiseXORExpression hasIn e1 </>
+                                 prettyPrint op </>
                                  ppBitwiseANDExpression hasIn e2
   _ -> ppBitwiseANDExpression hasIn e
 
 ppBitwiseORExpression :: Bool -> Expression a -> Doc
 ppBitwiseORExpression hasIn e = case e of
-  InfixExpr _ op@OpBOr e1 e2 -> ppBitwiseORExpression hasIn e1 <+>
-                                prettyPrint op <+>
+  InfixExpr _ op@OpBOr e1 e2 -> ppBitwiseORExpression hasIn e1 </>
+                                prettyPrint op </>
                                 ppBitwiseXORExpression hasIn e2
   _ -> ppBitwiseXORExpression hasIn e
 
 -- 11.11
 ppLogicalANDExpression :: Bool -> Expression a -> Doc
 ppLogicalANDExpression hasIn e = case e of
-  InfixExpr _ op@OpLAnd e1 e2 -> ppLogicalANDExpression hasIn e1 <+>
-                                 prettyPrint op <+>
+  InfixExpr _ op@OpLAnd e1 e2 -> ppLogicalANDExpression hasIn e1 </>
+                                 prettyPrint op </>
                                  ppBitwiseORExpression hasIn e2
   _ -> ppBitwiseORExpression hasIn e
 
 ppLogicalORExpression :: Bool -> Expression a -> Doc
 ppLogicalORExpression hasIn e = case e of
-  InfixExpr _ op@OpLOr e1 e2 -> ppLogicalORExpression hasIn e1 <+>
-                                prettyPrint op <+>
+  InfixExpr _ op@OpLOr e1 e2 -> ppLogicalORExpression hasIn e1 </>
+                                prettyPrint op </>
                                 ppLogicalANDExpression hasIn e2
   _ -> ppLogicalANDExpression hasIn e
 
 -- 11.12
 ppConditionalExpression :: Bool -> Expression a -> Doc
 ppConditionalExpression hasIn e = case e of
-  CondExpr _ c et ee -> ppLogicalORExpression hasIn c <+> text "?" <+>
-                        ppAssignmentExpression hasIn et <+> colon <+>
+  CondExpr _ c et ee -> ppLogicalORExpression hasIn c </> text "?" <+>
+                        ppAssignmentExpression hasIn et </> colon <+>
                         ppAssignmentExpression hasIn ee
   _ -> ppLogicalORExpression hasIn e
 
 -- 11.13
 ppAssignmentExpression :: Bool -> Expression a -> Doc
 ppAssignmentExpression hasIn e = case e of
-  AssignExpr _ op l r -> prettyPrint l <+> prettyPrint op <+>
+  AssignExpr _ op l r -> prettyPrint l </> prettyPrint op </>
                          ppAssignmentExpression hasIn r
   _ -> ppConditionalExpression hasIn e
 

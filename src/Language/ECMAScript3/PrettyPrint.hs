@@ -48,8 +48,8 @@ instance Pretty (Statement a) where
   prettyPrint s = case s of
     BlockStmt _ ss -> asBlock ss
     EmptyStmt _ -> semi
-    ExprStmt _ e | unsafeInExprStmt (e) -> parens (ppExpression True e) <> semi
-    ExprStmt _ e | otherwise            -> ppExpression True e <> semi
+    ExprStmt _ e | unsafeInExprStmt (e) -> parens (nest 4 (ppExpression True e)) <> semi
+    ExprStmt _ e | otherwise            -> nest 4 (ppExpression True e) <> semi
     IfSingleStmt _ test cons -> text "if" <+>
                                 parens (ppExpression True test) </>
                                 indented 3 cons
@@ -64,7 +64,7 @@ instance Pretty (Statement a) where
     WhileStmt _ test body -> text "while" <+> parens (ppExpression True test) </>
                              indented 3 body
     ReturnStmt _ Nothing -> text "return" <> semi
-    ReturnStmt _ (Just e) -> text "return" <+> ppExpression True e <> semi
+    ReturnStmt _ (Just e) -> text "return" <+> nest 4 (ppExpression True e) <> semi
     DoWhileStmt _ s e ->
       text "do" </>
       (indented 3 s </> text "while" <+> parens (ppExpression True e)

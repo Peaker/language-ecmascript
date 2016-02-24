@@ -96,7 +96,7 @@ instance Pretty (Statement a) where
     WithStmt _ e s -> text "with" <+> parens (ppExpression True e)
                       </> indented 3 s
     VarDeclStmt _ decls ->
-      text "var" <+> cat (punctuate comma (map (ppVarDecl True) decls))
+      text "var" <+> nest 4 (cat (punctuate comma (map (ppVarDecl True) decls)))
       <> semi
     FunctionStmt _ name args body ->
       text "function" <+> prettyPrint name <>

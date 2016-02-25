@@ -64,7 +64,7 @@ instance Pretty (Statement a) where
                                   else indented 3 alt
     SwitchStmt _ e cases ->
       text "switch" <+> parens (ppExpression True e) <> line <>
-      braces (nest 3 (vcat (map prettyPrint cases)))
+      ppBlock 2 (vcat (map prettyPrint cases))
     WhileStmt _ test body -> text "while" <+> parens (ppExpression True test) </>
                              indented 3 body
     ReturnStmt _ Nothing -> text "return" <> semi
@@ -258,7 +258,10 @@ inBlock s                 = asBlock [s]
 
 asBlock :: [Statement a] -> Doc
 asBlock [] = lbrace <$$> rbrace
-asBlock ss = lbrace <> nest 3 (line <> prettyPrint ss) <$$> rbrace
+asBlock ss = ppBlock 3 (prettyPrint ss)
+
+ppBlock :: Int -> Doc -> Doc
+ppBlock width doc = lbrace <> nest width (line <> doc) <$$> rbrace
 
 ppVarDecl :: Bool -> VarDecl a -> Doc
 ppVarDecl hasIn vd = case vd of

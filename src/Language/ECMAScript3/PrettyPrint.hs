@@ -162,8 +162,11 @@ instance Pretty (VarDecl a) where
 instance Pretty (CaseClause a) where
   prettyPrint c = case c of
     CaseClause _ e ss ->
-      text "case" <+> ppExpression True e <> colon <> softbreak <> nest 2 (prettyPrint ss)
-    CaseDefault _ ss -> text "default:" <> softbreak <> nest 2 (prettyPrint ss)
+      text "case" <+> ppExpression True e <> suffix ss
+    CaseDefault _ ss ->
+      text "default" <> suffix ss
+    where
+      suffix ss = colon <> softbreak <> nest 2 (prettyPrint ss)
 
 instance Pretty InfixOp where
    prettyPrint op = text $ case op of

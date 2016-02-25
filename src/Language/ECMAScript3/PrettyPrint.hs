@@ -166,7 +166,7 @@ instance Pretty (CaseClause a) where
     CaseDefault _ ss ->
       text "default" <> suffix ss
     where
-      suffix ss = colon <> softbreak <> nest 2 (prettyPrint ss)
+      suffix ss = colon <> nest 2 (softbreak <> prettyPrint ss)
 
 instance Pretty InfixOp where
    prettyPrint op = text $ case op of

@@ -10,13 +10,17 @@ module Language.ECMAScript3.PrettyPrint (Pretty (..)
                                         ,unsafeInExprStmt
                                         ) where
 
-import Text.PrettyPrint.Leijen hiding (Pretty)
+import qualified Text.PrettyPrint.Leijen as Pretty
+import Text.PrettyPrint.Leijen hiding (Pretty, parens)
 import Language.ECMAScript3.Syntax
 import Prelude hiding (maybe, id)
 import Data.Char
 import Numeric
 
 {-# DEPRECATED PP, javaScript, renderStatements, renderExpression "These interfaces are outdated and would be removed/hidden in version 1.0. Use the Pretty class instead." #-}
+
+parens :: Doc -> Doc
+parens = Pretty.parens . align
 
 -- | A class of pretty-printable ECMAScript AST nodes. Will
 -- pretty-print correct JavaScript given that the 'isValid' predicate
